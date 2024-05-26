@@ -60,3 +60,14 @@ cor_matrix
 # Scatterplot matrix for numerical variables
 pairs(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
 
+# Perform ANOVA for 'Category' against numerical variables
+anova_results <- lapply(hepatitis_data[, sapply(hepatitis_data, is.numeric)], 
+                        function(x) {
+                          aov_out <- aov(x ~ Category, data = hepatitis_data)
+                          return(summary(aov_out))
+                        })
+
+# Display ANOVA results
+names(anova_results) <- colnames(hepatitis_data)[sapply(hepatitis_data, is.numeric)]
+anova_results
+
