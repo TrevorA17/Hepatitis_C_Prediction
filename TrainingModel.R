@@ -12,3 +12,16 @@ test_data <- hepatitis_data_clean[-train_indices, ]
 
 dim(train_data)
 dim(test_data)
+
+library(boot)
+# Define the function for bootstrapping
+boot_function <- function(data, index) {
+  return(mean(data[index, "AST"], na.rm = TRUE))
+}
+
+# Perform bootstrapping with 1000 resamples
+set.seed(123)
+bootstrap_results <- boot(data = train_data, statistic = boot_function, R = 1000)
+
+# Summary of bootstrap results
+summary(bootstrap_results)
