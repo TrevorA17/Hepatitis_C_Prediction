@@ -71,3 +71,33 @@ anova_results <- lapply(hepatitis_data[, sapply(hepatitis_data, is.numeric)],
 names(anova_results) <- colnames(hepatitis_data)[sapply(hepatitis_data, is.numeric)]
 anova_results
 
+library(ggplot2)
+library(GGally)
+
+# Histogram for Age
+ggplot(hepatitis_data, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Histogram of Age", x = "Age", y = "Frequency")
+
+# Boxplot for Age by Category
+ggplot(hepatitis_data, aes(x = Category, y = Age, fill = Category)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Age by Category", x = "Category", y = "Age")
+
+# Density plot for AST
+ggplot(hepatitis_data, aes(x = AST)) +
+  geom_density(fill = "skyblue", color = "black") +
+  labs(title = "Density Plot of AST", x = "AST", y = "Density")
+
+# Pairwise scatterplot matrix for numerical variables
+pairs(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
+
+# Scatterplot of Age vs. AST colored by Category
+ggplot(hepatitis_data, aes(x = Age, y = AST, color = Category)) +
+  geom_point() +
+  labs(title = "Scatterplot of Age vs. AST", x = "Age", y = "AST")
+
+# Scatterplot matrix for numerical variables, colored by Category
+ggpairs(hepatitis_data, columns = c("Age", "AST", "ALT", "BIL", "CREA"),
+        aes(color = Category))
+
