@@ -25,3 +25,17 @@ bootstrap_results <- boot(data = train_data, statistic = boot_function, R = 1000
 
 # Summary of bootstrap results
 summary(bootstrap_results)
+
+# Define the training control
+train_control <- trainControl(method = "cv", number = 10)
+
+# Train a model using cross-validation
+# Example: Using Linear Discriminant Analysis (LDA)
+library(MASS)  # For LDA
+lda_model <- train(Category ~ ., data = train_data, method = "lda", trControl = train_control)
+
+# Display cross-validation results
+print(lda_model)
+
+
+
