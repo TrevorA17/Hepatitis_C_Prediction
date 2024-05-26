@@ -1,2 +1,2 @@
-# Hepatitis_C_Prediction
-Predicting Hepatitis C based Laboratory values of blood donors and Hepatitis C patients
+# Hepatitis C Prediction
+The Hepatitis Prediction Project utilizes machine learning techniques, particularly Linear Discriminant Analysis (LDA), to develop a predictive model for Hepatitis diagnosis based on laboratory values of blood donors and Hepatitis C patients. The project involves data preprocessing, model training, and evaluation. Initially, the dataset is loaded and cleaned to handle missing values. Next, the LDA model is trained on the cleaned dataset, incorporating features such as age, sex, and various blood parameters. The trained model is then saved for deployment. Additionally, a Plumber API endpoint is created to provide a user-friendly interface for making predictions using the saved model. This project aims to provide a valuable tool for healthcare professionals to aid in Hepatitis diagnosis and treatment planning.
