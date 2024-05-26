@@ -40,3 +40,13 @@ hepatitis_data_clean <- na.omit(hepatitis_data)
 # Display the dimensions of the cleaned dataset
 cat("Dimensions of the cleaned dataset:", nrow(hepatitis_data_clean), "rows and", ncol(hepatitis_data_clean), "columns.\n")
 
+# Check for missing values in the cleaned dataset
+missing_values_clean <- colSums(is.na(hepatitis_data_clean))
+
+# Print variables with missing values and their counts
+print(missing_values_clean[missing_values_clean > 0])
+
+# Display the total count of missing values in the cleaned dataset
+total_missing_clean <- sum(missing_values_clean)
+cat("Total missing values in the cleaned dataset:", total_missing_clean, "\n")
+
