@@ -1,0 +1,287 @@
+---
+title: "Hepatitis C Prediction"
+author: "Trevor Okinda"
+date: "2024"
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_height: 4
+    df_print: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Student Details
+
+|                                              |     |
+|----------------------------------------------|-----|
+| **Student ID Number**                        | 134780 |
+| **Student Name**                             | Trevor Okinda |
+| **BBIT 4.2 Group**                           | C |
+| **Project Name**                             | Hepatitis C Prediction |
+
+# Setup Chunk
+
+**Note:** the following KnitR options have been set as the global defaults: <BR> `knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy = TRUE)`.
+
+More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+
+```{r setup, include=FALSE}
+library(formatR)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  collapse = FALSE
+)
+```
+
+### Source: 
+
+The dataset that was used can be downloaded here: *\<https://www.kaggle.com/datasets/fedesoriano/hepatitis-c-dataset\>*
+
+### Reference:
+
+*\<Lichtinghagen, R., Klawonn, F., & Hoffmann, G. (2015). Hepatitis C Prediction Dataset. UCI Machine Learning Repository. Retrieved from https://archive.ics.uci.edu/ml/datasets/HCV+data\>\
+Refer to the APA 7th edition manual for rules on how to cite datasets: <https://apastyle.apa.org/style-grammar-guidelines/references/examples/data-set-references>*
+
+# Exploratory Data Analysis
+## Load dataset
+```{r load dataset}
+# Load dataset
+hepatitis_data <- read.csv("HepatitisCdata.csv", colClasses = c(
+  Category = "factor",
+  Age = "numeric",
+  Sex = "factor",
+  ALB = "numeric",
+  ALP = "numeric",
+  ALT = "numeric",
+  AST = "numeric",
+  BIL = "numeric",
+  CHE = "numeric",
+  CHOL = "numeric",
+  CREA = "numeric",
+  GGT = "numeric",
+  PROT = "numeric"
+))
+
+# Display the structure of the dataset
+str(hepatitis_data)
+
+# View the first few rows of the dataset
+head(hepatitis_data)
+
+# View the dataset in a separate viewer window
+View(hepatitis_data)
+
+```
+
+## Measures of Frequency
+```{r MOF}
+# Frequency of each category
+table(hepatitis_data$Category)
+
+# Frequency of each sex
+table(hepatitis_data$Sex)
+```
+
+## Measures of Central Tendency
+```{r MOCT}
+# Mean, median, and mode of ALB
+mean_ALB <- mean(hepatitis_data$ALB)
+median_ALB <- median(hepatitis_data$ALB)
+mode_ALB <- names(sort(-table(hepatitis_data$ALB)))[1]
+
+# Display results
+cat("Mean ALB:", mean_ALB, "\n")
+cat("Median ALB:", median_ALB, "\n")
+cat("Mode ALB:", mode_ALB, "\n")
+
+# Mean of other numerical variables
+col_means <- colMeans(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
+col_means
+
+```
+
+## Measures of Distribution
+```{r MOD}
+# Summary statistics for numerical variables
+summary(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
+```
+
+## Measures of Relationship
+```{r MOR}
+# Correlation matrix
+cor_matrix <- cor(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
+cor_matrix
+
+```
+
+## ANOVA
+```{r ANOVA}
+# Perform ANOVA for 'Category' against numerical variables
+anova_results <- lapply(hepatitis_data[, sapply(hepatitis_data, is.numeric)], 
+                        function(x) {
+                          aov_out <- aov(x ~ Category, data = hepatitis_data)
+                          return(summary(aov_out))
+                        })
+
+# Display ANOVA results
+names(anova_results) <- colnames(hepatitis_data)[sapply(hepatitis_data, is.numeric)]
+anova_results
+```
+
+## Plots
+```{r Plots}
+library(ggplot2)
+library(GGally)
+
+# Histogram for Age
+ggplot(hepatitis_data, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Histogram of Age", x = "Age", y = "Frequency")
+
+# Boxplot for Age by Category
+ggplot(hepatitis_data, aes(x = Category, y = Age, fill = Category)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Age by Category", x = "Category", y = "Age")
+
+# Density plot for AST
+ggplot(hepatitis_data, aes(x = AST)) +
+  geom_density(fill = "skyblue", color = "black") +
+  labs(title = "Density Plot of AST", x = "AST", y = "Density")
+
+# Pairwise scatterplot matrix for numerical variables
+pairs(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
+
+# Scatterplot of Age vs. AST colored by Category
+ggplot(hepatitis_data, aes(x = Age, y = AST, color = Category)) +
+  geom_point() +
+  labs(title = "Scatterplot of Age vs. AST", x = "Age", y = "AST")
+
+
+# Boxplot for Age
+boxplot(hepatitis_data$Age)
+
+# Histogram for Age
+hist(hepatitis_data$Age)
+
+# Scatterplot matrix for numerical variables
+pairs(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
+
+```
+
+# Preprocessing and Data Transformation
+## Missing Values
+```{r Missing Values}
+# Check for missing values in the dataset
+missing_values <- colSums(is.na(hepatitis_data))
+
+# Print variables with missing values and their counts
+print(missing_values[missing_values > 0])
+
+# Display the total count of missing values in the dataset
+total_missing <- sum(missing_values)
+cat("Total missing values in the dataset:", total_missing, "\n")
+
+```
+
+## Dataset Cleaning
+```{r Cleaning}
+# Remove rows with missing values
+hepatitis_data_clean <- na.omit(hepatitis_data)
+
+# Display the dimensions of the cleaned dataset
+cat("Dimensions of the cleaned dataset:", nrow(hepatitis_data_clean), "rows and", ncol(hepatitis_data_clean), "columns.\n")
+
+# Check for missing values in the cleaned dataset
+missing_values_clean <- colSums(is.na(hepatitis_data_clean))
+
+# Print variables with missing values and their counts
+print(missing_values_clean[missing_values_clean > 0])
+
+# Display the total count of missing values in the cleaned dataset
+total_missing_clean <- sum(missing_values_clean)
+cat("Total missing values in the cleaned dataset:", total_missing_clean, "\n")
+```
+
+# Training Model
+## Data Splitting
+```{r Data Splitting}
+library(caret)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Create indices for train-test split (80% train, 20% test)
+train_indices <- createDataPartition(hepatitis_data_clean$Category, p = 0.8, list = FALSE)
+
+# Split the data into training and testing sets
+train_data <- hepatitis_data_clean[train_indices, ]
+test_data <- hepatitis_data_clean[-train_indices, ]
+
+dim(train_data)
+dim(test_data)
+
+```
+
+## Bootstrapping
+```{r Bootstrapping}
+library(boot)
+# Define the function for bootstrapping
+boot_function <- function(data, index) {
+  return(mean(data[index, "AST"], na.rm = TRUE))
+}
+
+# Perform bootstrapping with 1000 resamples
+set.seed(123)
+bootstrap_results <- boot(data = train_data, statistic = boot_function, R = 1000)
+
+# Summary of bootstrap results
+summary(bootstrap_results)
+```
+
+## Model Training
+```{r Model Training}
+# Define the training control
+train_control <- trainControl(method = "cv", number = 10)
+
+# Train a model using cross-validation
+# Example: Using Linear Discriminant Analysis (LDA)
+library(MASS)  # For LDA
+lda_model <- train(Category ~ ., data = train_data, method = "lda", trControl = train_control)
+
+# Display cross-validation results
+print(lda_model)
+
+```
+
+## Saving Model
+```{r Saving Model}
+# Load the saved LDA model
+loaded_lda_model <- readRDS("./models/lda_model.rds")
+
+# Prepare new data for prediction
+new_data <- data.frame(
+  Age = 32,
+  Sex = "m",
+  ALB = 38.5,
+  ALP = 52.5,
+  ALT = 7.7,
+  AST = 22.1,
+  BIL = 7.5,
+  CHE = 6.93,
+  CHOL = 3.23,
+  CREA = 106,
+  GGT = 12.1,
+  PROT = 69
+)
+
+# Use the loaded model to make predictions for new data
+predictions_loaded_model <- predict(loaded_lda_model, newdata = new_data)
+
+# Print predictions
+print(predictions_loaded_model)
+
+```
+

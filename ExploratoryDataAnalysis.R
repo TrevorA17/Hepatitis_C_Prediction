@@ -47,18 +47,10 @@ col_means
 # Summary statistics for numerical variables
 summary(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
 
-# Boxplot for Age
-boxplot(hepatitis_data$Age)
-
-# Histogram for Age
-hist(hepatitis_data$Age)
-
 # Correlation matrix
 cor_matrix <- cor(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
 cor_matrix
 
-# Scatterplot matrix for numerical variables
-pairs(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
 
 # Perform ANOVA for 'Category' against numerical variables
 anova_results <- lapply(hepatitis_data[, sapply(hepatitis_data, is.numeric)], 
@@ -101,3 +93,11 @@ ggplot(hepatitis_data, aes(x = Age, y = AST, color = Category)) +
 ggpairs(hepatitis_data, columns = c("Age", "AST", "ALT", "BIL", "CREA"),
         aes(color = Category))
 
+# Boxplot for Age
+boxplot(hepatitis_data$Age)
+
+# Histogram for Age
+hist(hepatitis_data$Age)
+
+# Scatterplot matrix for numerical variables
+pairs(hepatitis_data[, sapply(hepatitis_data, is.numeric)])
